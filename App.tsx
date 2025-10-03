@@ -1,14 +1,14 @@
 
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Grid } from './components/Grid';
-import { Keyboard } from './components/Keyboard';
-import { useGameState } from './hooks/useGameState';
-import { ToastContainer, Toast } from './components/Toast';
-import { GameEndModal } from './components/GameEndModal';
-import { SettingsModal } from './components/SettingsModal';
-import { InfoModal } from './components/InfoModal';
-import { InfoIcon, SettingsIcon, CharacterIcon, EpisodeIcon, GiveUpIcon, SkipIcon } from './components/Icons';
+import { Grid } from './components/Grid.tsx';
+import { Keyboard } from './components/Keyboard.tsx';
+import { useGameState } from './hooks/useGameState.tsx';
+import { ToastContainer, Toast } from './components/Toast.tsx';
+import { GameEndModal } from './components/GameEndModal.tsx';
+import { SettingsModal } from './components/SettingsModal.tsx';
+import { InfoModal } from './components/InfoModal.tsx';
+import { InfoIcon, SettingsIcon, CharacterIcon, EpisodeIcon, GiveUpIcon, SkipIcon } from './components/Icons.tsx';
 
 const App: React.FC = () => {
   const {

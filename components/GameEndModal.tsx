@@ -1,8 +1,9 @@
+
 import React from 'react';
-import { GameStatus, Quote, LetterState } from '../types';
-import { getGuessStates } from '../utils/gameUtils';
-import { ShareIcon } from './Icons';
-import { MAX_GUESSES } from '../constants';
+import { GameStatus, Quote, LetterState } from '../types.ts';
+import { getGuessStates } from '../utils/gameUtils.ts';
+import { ShareIcon } from './Icons.tsx';
+import { MAX_GUESSES } from '../constants.ts';
 
 interface GameEndModalProps {
   isOpen: boolean;

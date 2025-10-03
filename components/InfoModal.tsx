@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Modal } from './Modal';
+import { Modal } from './Modal.tsx';
 
 interface InfoModalProps {
     isOpen: boolean;

@@ -1,5 +1,6 @@
 
-import { LetterState, LetterStatuses } from '../types';
+
+import { LetterState, LetterStatuses } from '../types.ts';
 
 export const getLetterStatuses = (guesses: string[], solution: string): LetterStatuses => {
   const statuses: LetterStatuses = {};

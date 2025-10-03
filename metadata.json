@@ -1,0 +1,5 @@
+{
+  "name": "Peepdle",
+  "description": "An interactive word-guessing game based on Wordle, where players attempt to guess a word from a quote in the British sitcom 'Peep Show'.",
+  "requestFramePermissions": []
+}

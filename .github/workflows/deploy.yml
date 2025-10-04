@@ -40,7 +40,7 @@ jobs:
         run: npm install
 
       - name: Build project
-        run: npm run build
+        run: npx vite build --base /Peepdle-Beta/ --outDir dist
 
       - name: Verify dist folder
         run: ls -R dist

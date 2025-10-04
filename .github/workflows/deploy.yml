@@ -25,6 +25,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
@@ -36,6 +41,9 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+      - name: Verify dist folder
+        run: ls -R dist
 
       - name: Copy index.html to 404.html for SPA routing
         run: cp dist/index.html dist/404.html

@@ -12,6 +12,7 @@ import { InfoIcon, SettingsIcon, CharacterIcon, EpisodeIcon, GiveUpIcon, SkipIco
 
 const App: React.FC = () => {
   const {
+    isLoading,
     gameState,
     solution,
     quote,
@@ -87,6 +88,15 @@ const App: React.FC = () => {
     }
     prevSkipsRef.current = skips;
   }, [skips, isUnlimitedMode]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-screen max-h-[100dvh] items-center justify-center p-2 sm:p-4 font-sans text-slate-800 dark:text-slate-200">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-wider animate-pulse">PEEPDLE</h1>
+        <p className="mt-4 text-slate-500 dark:text-slate-400">Loading quotes...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen max-h-[100dvh] items-center justify-between p-2 sm:p-4 font-sans">

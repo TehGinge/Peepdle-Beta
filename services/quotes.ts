@@ -1,12 +1,31 @@
 
 import { Quote } from '../types.ts';
 import { MIN_WORD_LENGTH } from '../constants.ts';
-import { quotesData } from './quotesData.ts';
 import { excludedWords } from './excludedWords.ts';
 
-const quotes: Quote[] = quotesData.results;
+let quotes: Quote[] = [];
+
+export const fetchQuotes = async (): Promise<boolean> => {
+    if (quotes.length > 0) return true;
+    try {
+        const response = await fetch('./quotes.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        quotes = data.results;
+        return true;
+    } catch (error) {
+        console.error("Could not fetch quotes data:", error);
+        return false;
+    }
+};
 
 export const getSolutionById = (id: string, maxWordLength: number): { solution: string; quote: Quote, originalWord: string } | null => {
+  if (quotes.length === 0) {
+      console.error("Quotes not loaded yet. Call fetchQuotes first.");
+      return null;
+  }
   const quote = quotes.find(q => q.id === id);
 
   if (!quote) {
@@ -41,6 +60,21 @@ export const getSolutionById = (id: string, maxWordLength: number): { solution: 
 };
 
 export const getNewSolution = (maxWordLength: number): { solution: string; quote: Quote, originalWord: string } => {
+  if (quotes.length === 0) {
+      console.error("Quotes not loaded yet. Call fetchQuotes first.");
+      // Fallback to prevent crash
+      const fallbackQuote: Quote = {
+        "quote": "A slim chance is better than no chance at all.",
+        "person": "System",
+        "episode": "Fallback",
+        "image": null,
+        "id": "fallback",
+        "episode_quote_sequence": "1",
+        "global_quote_sequence": "1"
+      };
+      return { solution: "chance", quote: fallbackQuote, originalWord: "chance" };
+  }
+
   // Pre-filter quotes to only include those with potential valid words
   const availableQuotes = quotes.filter(q => {
     const words = q.quote.split(' ');

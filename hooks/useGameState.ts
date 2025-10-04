@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameStatus, Quote, ToastMessage } from '../types.ts';
-import { getNewSolution, getSolutionById } from '../services/quotes.ts';
+import { fetchQuotes, getNewSolution, getSolutionById } from '../services/quotes.ts';
 import { MAX_GUESSES, DEFAULT_MAX_WORD_LENGTH, REVEAL_ANIMATION_DELAY, INITIAL_HINT_TOKENS, INITIAL_SKIPS } from '../constants.ts';
 import { getLetterStatuses, getGuessStates } from '../utils/gameUtils.ts';
 
@@ -30,6 +30,7 @@ const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T | ((va
 };
 
 export const useGameState = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [solution, setSolution] = useState('');
   const [quote, setQuote] = useState<Quote | null>(null);
   const [originalWord, setOriginalWord] = useState('');
@@ -89,37 +90,49 @@ export const useGameState = () => {
   }, [maxWordLength]);
   
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const puzzleId = urlParams.get('puzzle');
+    const initializeGame = async () => {
+      const quotesLoaded = await fetchQuotes();
+      if (!quotesLoaded) {
+        addToast("Error: Could not load game data.");
+        setIsLoading(false); // Stop loading, show error.
+        return;
+      }
 
-    if (puzzleId) {
-      console.log(`URL contains puzzle ID: "${puzzleId}". Attempting to load specific game.`);
-      const specificSolution = getSolutionById(puzzleId, maxWordLength);
-      
-      if (specificSolution) {
-        console.log(`Successfully loaded puzzle for ID "${puzzleId}".`);
-        const { solution: newSolution, quote: newQuote, originalWord: newOriginalWord } = specificSolution;
-        setSolution(newSolution);
-        setQuote(newQuote);
-        setOriginalWord(newOriginalWord);
-        setGuesses([]);
-        setCurrentGuess('');
-        setGameState('PLAYING');
-        setHints({
-          person: { revealed: false, value: newQuote.person },
-          episode: { revealed: false, value: newQuote.episode }
-        });
+      const urlParams = new URLSearchParams(window.location.search);
+      const puzzleId = urlParams.get('puzzle');
+
+      if (puzzleId) {
+        console.log(`URL contains puzzle ID: "${puzzleId}". Attempting to load specific game.`);
+        const specificSolution = getSolutionById(puzzleId, maxWordLength);
+        
+        if (specificSolution) {
+          console.log(`Successfully loaded puzzle for ID "${puzzleId}".`);
+          const { solution: newSolution, quote: newQuote, originalWord: newOriginalWord } = specificSolution;
+          setSolution(newSolution);
+          setQuote(newQuote);
+          setOriginalWord(newOriginalWord);
+          setGuesses([]);
+          setCurrentGuess('');
+          setGameState('PLAYING');
+          setHints({
+            person: { revealed: false, value: newQuote.person },
+            episode: { revealed: false, value: newQuote.episode }
+          });
+        } else {
+          console.warn(`Failed to load puzzle for ID "${puzzleId}". It might be invalid or have no suitable words for your settings. Starting a random game instead.`);
+          addToast('Invalid puzzle link. Starting a random game.');
+          // Clear the bad URL param and start a random game
+          window.history.pushState({}, '', window.location.pathname);
+          startNewGame();
+        }
       } else {
-        console.warn(`Failed to load puzzle for ID "${puzzleId}". It might be invalid or have no suitable words for your settings. Starting a random game instead.`);
-        addToast('Invalid puzzle link. Starting a random game.');
-        // Clear the bad URL param and start a random game
-        window.history.pushState({}, '', window.location.pathname);
+        console.log("No puzzle ID in URL. Starting a random game.");
         startNewGame();
       }
-    } else {
-      console.log("No puzzle ID in URL. Starting a random game.");
-      startNewGame();
-    }
+      setIsLoading(false);
+    };
+
+    initializeGame();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -264,6 +277,7 @@ export const useGameState = () => {
     : '';
 
   return {
+    isLoading,
     gameState,
     solution,
     quote,

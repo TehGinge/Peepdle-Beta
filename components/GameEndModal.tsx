@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { GameStatus, Quote, LetterState } from '../types';
 import { getGuessStates } from '../utils/gameUtils';
@@ -26,39 +24,24 @@ const escapeRegExp = (string: string) => {
 interface QuoteDisplayProps {
     quote: string;
     wordToHighlight: string;
-    finalGuessStates: LetterState[];
+    status: GameStatus;
 }
 
-const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, wordToHighlight, finalGuessStates }) => {
+const QuoteDisplay: React.FC<QuoteDisplayProps> = ({ quote, wordToHighlight, status }) => {
     const parts = quote.split(new RegExp(`(${escapeRegExp(wordToHighlight)})`, 'i'));
-
-    const stateToColor = {
-        correct: 'text-green-500 dark:text-green-400',
-        present: 'text-yellow-500 dark:text-yellow-400',
-        absent: 'text-red-500',
-    };
     
+    const highlightClass = status === 'WON' 
+        ? 'text-green-500 dark:text-green-400'
+        : 'text-red-500 dark:text-red-600';
+
     return (
-        <p className="text-lg text-center">
+        <p className="text-base text-center italic text-slate-600 dark:text-slate-300">
             "
             {parts.map((part, i) => {
                 if (part.toLowerCase() === wordToHighlight.toLowerCase()) {
-                    let letterIndex = 0;
                     return (
-                        <span key={i} className="font-bold uppercase">
-                            {part.split('').map((char, j) => {
-                                if (/[a-zA-Z]/.test(char)) {
-                                    const state = finalGuessStates[letterIndex];
-                                    letterIndex++;
-                                    return (
-                                        <span key={j} className={stateToColor[state as keyof typeof stateToColor] || 'text-inherit'}>
-                                            {char}
-                                        </span>
-                                    );
-                                } else {
-                                    return <span key={j}>{char}</span>;
-                                }
-                            })}
+                        <span key={i} className={`font-bold not-italic uppercase ${highlightClass}`}>
+                            {part}
                         </span>
                     );
                 }
@@ -105,10 +88,9 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, status, solu
     ? 'https://peepdle.uk/images/johnson-win.gif'
     : 'https://peepdle.uk/images/mark-lose.gif';
 
-  const altText = status === 'WON' ? 'Johnson winning GIF' : 'Mark losing GIF';
-
-  const lastGuess = status === 'WON' ? solution : guesses[guesses.length - 1];
-  const finalGuessStates = lastGuess ? getGuessStates(lastGuess, solution) : Array(solution.length).fill('absent');
+  const altText = status === 'WON' 
+    ? 'Johnson from Peep Show celebrating a win' 
+    : 'Mark from Peep Show looking disappointed after a loss';
   
   const handleShareLink = () => {
     if (!quote) return;
@@ -148,30 +130,42 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, status, solu
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-40 flex justify-center items-center p-4 animate-toast-in">
-      <div className="bg-white dark:bg-[#212121] rounded-lg shadow-xl w-full max-w-md mx-auto border border-gray-300 dark:border-gray-700 flex flex-col items-center p-6 space-y-4">
+    <div className="fixed inset-0 bg-black bg-opacity-90 z-40 flex justify-center items-center p-4 animate-toast-in overflow-y-auto">
+      <div className="bg-white dark:bg-[#212121] rounded-lg shadow-xl w-full max-w-sm mx-auto border border-gray-300 dark:border-gray-700 flex flex-col items-center p-6 space-y-4 my-auto">
         
-        <div className="text-center w-full">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Personal Best: </span>
-            <span className="text-green-500 dark:text-green-400 font-bold">{personalBest}</span>
+        <h2 className={`text-3xl font-bold uppercase tracking-wider ${status === 'WON' ? 'text-green-500 dark:text-green-400' : 'text-slate-500'}`}>
+          {status === 'WON' ? 'You Won!' : 'The word was'}
+        </h2>
+
+        {status === 'LOST' && (
+          <p className="text-4xl font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200 pb-2">
+            {solution}
+          </p>
+        )}
+        
+        <div className="w-full h-40 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+            <img src={gifUrl} alt={altText} className="w-full h-full object-cover rounded-lg" />
+        </div>
+        
+        <div className="flex justify-around w-full max-w-xs py-2">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-slate-800 dark:text-slate-200">{winStreak}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 tracking-wider">WIN STREAK</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-slate-800 dark:text-slate-200">{personalBest}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 tracking-wider">PERSONAL BEST</p>
+          </div>
         </div>
 
-        <div className="w-full h-48 bg-gray-100 dark:bg-black rounded-md overflow-hidden flex items-center justify-center">
-             <img src={gifUrl} alt={altText} className="w-full h-full object-cover" />
-        </div>
+        <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
 
-        <ShareableGrid guesses={guesses} solution={solution} />
-
-        <div className="text-center space-y-2">
-            <QuoteDisplay quote={quote.quote} wordToHighlight={originalWord} finalGuessStates={finalGuessStates} />
+        <div className="text-center space-y-3 w-full">
+            <ShareableGrid guesses={guesses} solution={solution} />
+            <QuoteDisplay quote={quote.quote} wordToHighlight={originalWord} status={status} />
             <p className="text-sm text-gray-500 dark:text-gray-400">
                 - {quote.person}, {quote.episode}
             </p>
-        </div>
-
-        <div className="text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400">Win Streak</p>
-            <p className={`text-3xl font-bold ${status === 'WON' ? 'text-green-500 dark:text-green-400' : 'text-red-500'}`}>{status === 'WON' ? winStreak : 0}</p>
         </div>
         
         <div className="w-full flex flex-col gap-2 mt-2">

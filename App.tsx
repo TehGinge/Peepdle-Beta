@@ -129,10 +129,10 @@ const App: React.FC = () => {
       </header>
 
 
-      <main className="flex flex-col items-center justify-start w-full max-w-md mx-auto flex-grow overflow-y-auto px-2">
+      <main className="flex flex-col items-center justify-center w-full max-w-md mx-auto flex-grow overflow-y-auto px-2">
           <p className="text-center italic text-base sm:text-lg text-slate-600 dark:text-slate-300 min-h-[48px] px-2 my-3 sm:my-5 flex items-center justify-center">"{maskedQuote}"</p>
           
-          <div className="w-full flex items-center justify-center flex-grow">
+          <div className="w-full flex items-center justify-center py-4">
             <Grid 
               guesses={guesses}
               currentGuess={currentGuess}
@@ -147,8 +147,8 @@ const App: React.FC = () => {
               <div className="h-4 w-px bg-gray-300 dark:bg-gray-700 mx-2"></div>
               <span>Skips: <span className="font-bold text-slate-800 dark:text-slate-200">{isUnlimitedMode ? '∞' : skips}</span></span>
             </div>
-            <div className="flex justify-center items-start gap-4 sm:gap-8">
-              <div className="flex flex-col items-center w-16 text-center">
+            <div className="flex justify-center items-start gap-3 sm:gap-6">
+              <div className="flex flex-col items-center w-14 text-center">
                 <button
                     onClick={() => useHint('person')}
                     disabled={hints.person.revealed || gameState !== 'PLAYING' || hintTokens <= 0}
@@ -161,7 +161,7 @@ const App: React.FC = () => {
                     {hints.person.revealed ? hints.person.value : 'CHARACTER'}
                 </p>
               </div>
-              <div className="flex flex-col items-center w-16 text-center">
+              <div className="flex flex-col items-center w-14 text-center">
                   <button
                       onClick={() => useHint('episode')}
                       disabled={hints.episode.revealed || gameState !== 'PLAYING' || hintTokens <= 0}
@@ -174,7 +174,7 @@ const App: React.FC = () => {
                       {hints.episode.revealed ? hints.episode.value : 'EPISODE'}
                   </p>
               </div>
-              <div className="flex flex-col items-center w-16 text-center">
+              <div className="flex flex-col items-center w-14 text-center">
                 <button
                     onClick={giveUp}
                     disabled={gameState !== 'PLAYING'}
@@ -187,7 +187,7 @@ const App: React.FC = () => {
                     GIVE UP
                 </p>
               </div>
-              <div className={`flex flex-col items-center w-16 text-center ${isSkipAnimating ? 'animate-pop' : ''}`}>
+              <div className={`flex flex-col items-center w-14 text-center ${isSkipAnimating ? 'animate-pop' : ''}`}>
                    <button
                       onClick={useSkip}
                       disabled={gameState !== 'PLAYING' || (!isUnlimitedMode && skips <= 0)}
@@ -209,9 +209,6 @@ const App: React.FC = () => {
           onKeyPress={handleKeyPress} 
           letterStatuses={letterStatuses}
         />
-        <footer className="text-center text-xs text-gray-500 py-4">
-          Quotes from Peep Show. Not affiliated with Channel 4.
-        </footer>
       </div>
 
       <GameEndModal

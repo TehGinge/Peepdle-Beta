@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameStatus, Quote, ToastMessage } from '../types';
 import { fetchQuotes, getNewSolution, getSolutionById } from '../services/quotes';
@@ -135,10 +136,21 @@ export const useGameState = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSettingChange = (setter: (value: boolean | ((val: boolean) => boolean)) => void, value: boolean) => {
-    setter(value);
+  const resetStats = (message: string) => {
     setWinStreak(0);
-    addToast('Settings changed. Streak reset!');
+    setSkips(INITIAL_SKIPS);
+    setHintTokens(INITIAL_HINT_TOKENS);
+    addToast(message);
+  };
+
+  const handleSettingChange = (setter: (value: boolean) => void, value: boolean) => {
+    setter(value);
+    resetStats('Settings changed. Stats reset!');
+  };
+
+  const handleLengthChange = (length: number) => {
+    setMaxWordLength(length);
+    resetStats('Settings changed. Stats reset!');
   };
 
   const toggleUnlimitedMode = (value: boolean) => handleSettingChange(setIsUnlimitedMode, value);
@@ -177,10 +189,7 @@ export const useGameState = () => {
   const giveUp = () => {
     if (gameState === 'PLAYING') {
       setGameState('LOST');
-      setWinStreak(0);
-      setSkips(INITIAL_SKIPS);
-      setHintTokens(INITIAL_HINT_TOKENS);
-      addToast('Streak, hints, and skips have been reset.');
+      resetStats('Streak, hints, and skips have been reset.');
     }
   };
 
@@ -248,6 +257,8 @@ export const useGameState = () => {
         } else if (newGuesses.length === MAX_GUESSES) {
           setGameState('LOST');
           setWinStreak(0);
+          setSkips(INITIAL_SKIPS);
+          setHintTokens(INITIAL_HINT_TOKENS);
         }
       }, solution.length * REVEAL_ANIMATION_DELAY);
       return;
@@ -300,7 +311,7 @@ export const useGameState = () => {
     giveUp,
     useHint,
     useSkip,
-    setMaxWordLength,
+    setMaxWordLength: handleLengthChange,
     isUnlimitedMode,
     isHardMode,
     isDarkMode,

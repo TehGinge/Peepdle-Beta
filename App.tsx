@@ -49,7 +49,7 @@ const App: React.FC = () => {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isSkipAnimating, setIsSkipAnimating] = useState(false);
   const prevSkipsRef = useRef(skips);
-  
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -99,7 +99,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-[100dvh] items-center justify-between p-2 sm:p-4 font-sans">
+    <div className="flex flex-col h-screen max-h-[100dvh] items-center p-2 sm:p-4 font-sans">
       <ToastContainer>
         {toasts.map((toast) => (
           <Toast key={toast.id} message={toast.message} onClose={() => removeToast(toast.id)} />
@@ -128,83 +128,85 @@ const App: React.FC = () => {
           </div>
       </header>
 
-
-      <main className="flex flex-col items-center justify-center w-full max-w-md mx-auto flex-grow overflow-y-auto px-2">
-          <p className="text-center italic text-base sm:text-lg text-slate-600 dark:text-slate-300 min-h-[48px] px-2 my-3 sm:my-5 flex items-center justify-center">"{maskedQuote}"</p>
-          
-          <div className="w-full flex items-center justify-center py-4">
-            <Grid 
-              guesses={guesses}
-              currentGuess={currentGuess}
-              solution={solution}
-              isRevealing={isRevealing}
-            />
-          </div>
-
-          <div className="w-full flex-shrink-0 pt-2 pb-2">
-            <div className="flex justify-center items-center gap-2 text-sm mb-2 text-slate-500 dark:text-slate-400">
-              <span>Hints: <span className="font-bold text-slate-800 dark:text-slate-200">{hintTokens}</span></span>
-              <div className="h-4 w-px bg-gray-300 dark:bg-gray-700 mx-2"></div>
-              <span>Skips: <span className="font-bold text-slate-800 dark:text-slate-200">{isUnlimitedMode ? '∞' : skips}</span></span>
-            </div>
-            <div className="flex justify-center items-start gap-3 sm:gap-6">
-              <div className="flex flex-col items-center w-14 text-center">
-                <button
-                    onClick={() => useHint('person')}
-                    disabled={hints.person.revealed || gameState !== 'PLAYING' || hintTokens <= 0}
-                    className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    aria-label="Use Character Hint"
-                >
-                    <CharacterIcon />
-                </button>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 h-8">
-                    {hints.person.revealed ? hints.person.value : 'CHARACTER'}
-                </p>
-              </div>
-              <div className="flex flex-col items-center w-14 text-center">
-                  <button
-                      onClick={() => useHint('episode')}
-                      disabled={hints.episode.revealed || gameState !== 'PLAYING' || hintTokens <= 0}
-                      className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Use Episode Hint"
-                  >
-                      <EpisodeIcon />
-                  </button>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 h-8">
-                      {hints.episode.revealed ? hints.episode.value : 'EPISODE'}
-                  </p>
-              </div>
-              <div className="flex flex-col items-center w-14 text-center">
-                <button
-                    onClick={giveUp}
-                    disabled={gameState !== 'PLAYING'}
-                    className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    aria-label="Give Up"
-                >
-                    <GiveUpIcon />
-                </button>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 h-8">
-                    GIVE UP
-                </p>
-              </div>
-              <div className={`flex flex-col items-center w-14 text-center ${isSkipAnimating ? 'animate-pop' : ''}`}>
-                   <button
-                      onClick={useSkip}
-                      disabled={gameState !== 'PLAYING' || (!isUnlimitedMode && skips <= 0)}
-                      className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Skip Word"
-                  >
-                      <SkipIcon />
-                  </button>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 h-8">
-                      SKIP
-                  </p>
-              </div>
-            </div>
-          </div>
-      </main>
+      {/* Central content area: Quote scrolls, Grid is fixed */}
+      <div className="w-full max-w-md mx-auto flex-grow flex flex-col min-h-0 px-2">
+        <div className="flex-grow overflow-y-auto flex items-center justify-center py-2">
+            <p className="text-center italic text-slate-600 dark:text-slate-300 text-base sm:text-lg">
+                "{maskedQuote}"
+            </p>
+        </div>
+        <div className="flex-shrink-0 w-full py-2">
+          <Grid 
+            guesses={guesses}
+            currentGuess={currentGuess}
+            solution={solution}
+            isRevealing={isRevealing}
+          />
+        </div>
+      </div>
 
       <div className="flex flex-col w-full items-center flex-shrink-0">
+        <div className="w-full max-w-md flex-shrink-0">
+          <div className="flex justify-center items-center gap-2 text-xs text-slate-500 dark:text-slate-400 pb-1">
+            <span>Hints: <span className="font-bold text-slate-800 dark:text-slate-200">{hintTokens}</span></span>
+            <span className="text-gray-400 dark:text-gray-600">|</span>
+            <span>Skips: <span className="font-bold text-slate-800 dark:text-slate-200">{isUnlimitedMode ? '∞' : skips}</span></span>
+          </div>
+          <div className="flex justify-center items-start gap-2 sm:gap-4">
+            <div className="flex flex-col items-center w-14 text-center">
+              <button
+                  onClick={() => useHint('person')}
+                  disabled={hints.person.revealed || gameState !== 'PLAYING' || hintTokens <= 0}
+                  className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Use Character Hint"
+              >
+                  <CharacterIcon />
+              </button>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 h-8">
+                  {hints.person.revealed ? hints.person.value : 'CHARACTER'}
+              </p>
+            </div>
+            <div className="flex flex-col items-center w-14 text-center">
+                <button
+                    onClick={() => useHint('episode')}
+                    disabled={hints.episode.revealed || gameState !== 'PLAYING' || hintTokens <= 0}
+                    className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Use Episode Hint"
+                >
+                    <EpisodeIcon />
+                </button>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 h-8">
+                    {hints.episode.revealed ? hints.episode.value : 'EPISODE'}
+                </p>
+            </div>
+            <div className="flex flex-col items-center w-14 text-center">
+              <button
+                  onClick={giveUp}
+                  disabled={gameState !== 'PLAYING'}
+                  className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Give Up"
+              >
+                  <GiveUpIcon />
+              </button>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 h-8">
+                  GIVE UP
+              </p>
+            </div>
+            <div className={`flex flex-col items-center w-14 text-center ${isSkipAnimating ? 'animate-pop' : ''}`}>
+                 <button
+                    onClick={useSkip}
+                    disabled={gameState !== 'PLAYING' || (!isUnlimitedMode && skips <= 0)}
+                    className="p-3 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Skip Word"
+                >
+                    <SkipIcon />
+                </button>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 h-8">
+                    SKIP
+                </p>
+            </div>
+          </div>
+        </div>
         <Keyboard 
           onKeyPress={handleKeyPress} 
           letterStatuses={letterStatuses}

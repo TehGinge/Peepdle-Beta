@@ -1,7 +1,7 @@
 
-import { Quote } from '../types.ts';
-import { MIN_WORD_LENGTH } from '../constants.ts';
-import { excludedWords } from './excludedWords.ts';
+import { Quote } from '../types';
+import { MIN_WORD_LENGTH } from '../constants';
+import { excludedWords } from './excludedWords';
 
 let quotes: Quote[] = [];
 

@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { LetterState, LetterStatuses } from '../types.ts';
-import { BackspaceIcon, EnterIcon } from './Icons.tsx';
+import { LetterState, LetterStatuses } from '../types';
+import { BackspaceIcon, EnterIcon } from './Icons';
 
 interface KeyboardProps {
   onKeyPress: (key: string) => void;

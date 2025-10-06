@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { InfoIcon, SettingsIcon } from './Icons.tsx';
+import { InfoIcon, SettingsIcon } from './Icons';
 
 interface HeaderProps {
     winStreak: number;

@@ -1,9 +1,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { GameStatus, Quote, ToastMessage } from '../types.ts';
-import { fetchQuotes, getNewSolution, getSolutionById } from '../services/quotes.ts';
-import { MAX_GUESSES, DEFAULT_MAX_WORD_LENGTH, REVEAL_ANIMATION_DELAY, INITIAL_HINT_TOKENS, INITIAL_SKIPS } from '../constants.ts';
-import { getLetterStatuses, getGuessStates } from '../utils/gameUtils.ts';
+import { GameStatus, Quote, ToastMessage } from '../types';
+import { fetchQuotes, getNewSolution, getSolutionById } from '../services/quotes';
+import { MAX_GUESSES, DEFAULT_MAX_WORD_LENGTH, REVEAL_ANIMATION_DELAY, INITIAL_HINT_TOKENS, INITIAL_SKIPS } from '../constants';
+import { getLetterStatuses, getGuessStates } from '../utils/gameUtils';
 
 const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] => {
   const [storedValue, setStoredValue] = useState<T>(() => {

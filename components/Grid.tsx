@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { MAX_GUESSES } from '../constants.ts';
-import { getGuessStates } from '../utils/gameUtils.ts';
-import { LetterState } from '../types.ts';
-import { REVEAL_ANIMATION_DELAY } from '../constants.ts';
+import { MAX_GUESSES } from '../constants';
+import { getGuessStates } from '../utils/gameUtils';
+import { LetterState } from '../types';
+import { REVEAL_ANIMATION_DELAY } from '../constants';
 
 interface GridProps {
   guesses: string[];

@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Modal } from './Modal.tsx';
-import { MIN_WORD_LENGTH, MAX_CONFIGURABLE_WORD_LENGTH } from '../constants.ts';
+import { Modal } from './Modal';
+import { MIN_WORD_LENGTH, MAX_CONFIGURABLE_WORD_LENGTH } from '../constants';
 
 interface ToggleSwitchProps {
     label: string;

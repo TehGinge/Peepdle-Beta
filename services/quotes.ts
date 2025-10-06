@@ -9,7 +9,7 @@ export const fetchQuotes = async (): Promise<boolean> => {
     try {
         // Fetch the quotes from the JSON file. Using a relative path
         // works correctly with the Vite build settings for GitHub Pages.
-        const response = await fetch('/quotes.json');
+        const response = await fetch(`${import.meta.env.BASE_URL}quotes.json`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

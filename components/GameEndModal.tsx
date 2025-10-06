@@ -2,7 +2,7 @@
 import React from 'react';
 import { GameStatus, Quote, LetterState } from '../types';
 import { getGuessStates } from '../utils/gameUtils';
-import { ShareIcon } from './Icons';
+import { ShareIcon, LinkIcon } from './Icons';
 import { MAX_GUESSES } from '../constants';
 
 interface GameEndModalProps {
@@ -109,7 +109,18 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, status, solu
   const lastGuess = status === 'WON' ? solution : guesses[guesses.length - 1];
   const finalGuessStates = lastGuess ? getGuessStates(lastGuess, solution) : Array(solution.length).fill('absent');
   
-  const handleShare = () => {
+  const handleShareLink = () => {
+    if (!quote) return;
+    const url = `${window.location.origin}${window.location.pathname}?puzzle=${quote.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      addToast('Copied link to clipboard!');
+    }).catch(err => {
+      addToast('Could not copy link.');
+      console.error('Failed to copy text: ', err);
+    });
+  };
+  
+  const handleShareResult = () => {
     if (!quote) return;
 
     const emojiGrid = guesses
@@ -125,7 +136,7 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, status, solu
       })
       .join('\n');
 
-    const resultText = `Peepdle #${quote.id} ${status === 'WON' ? guesses.length : 'X'}/${MAX_GUESSES}\n\n${emojiGrid}\n\nChallenge a mate:\n${window.location.origin}${window.location.pathname}?puzzle=${quote.id}`;
+    const resultText = `Peepdle #${quote.id} ${status === 'WON' ? guesses.length : 'X'}/${MAX_GUESSES}\n\n${emojiGrid}`;
 
     navigator.clipboard.writeText(resultText).then(() => {
       addToast('Copied results to clipboard!');
@@ -162,14 +173,23 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, status, solu
             <p className={`text-3xl font-bold ${status === 'WON' ? 'text-green-500 dark:text-green-400' : 'text-red-500'}`}>{status === 'WON' ? winStreak : 0}</p>
         </div>
         
-        <div className="w-full flex gap-2 mt-2">
-            <button
-              onClick={handleShare}
-              className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
-              aria-label="Share your results"
-            >
-              <ShareIcon /> SHARE
-            </button>
+        <div className="w-full flex flex-col gap-2 mt-2">
+            <div className="flex gap-2">
+                <button
+                  onClick={handleShareLink}
+                  className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                  aria-label="Copy challenge link"
+                >
+                  <LinkIcon /> COPY LINK
+                </button>
+                <button
+                  onClick={handleShareResult}
+                  className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                  aria-label="Copy game results"
+                >
+                  <ShareIcon /> COPY RESULT
+                </button>
+            </div>
             <button
               onClick={onNewGame}
               className="w-full py-3 bg-slate-700 hover:bg-slate-600 dark:bg-gray-600 text-white font-bold rounded-lg dark:hover:bg-gray-500 transition-colors"

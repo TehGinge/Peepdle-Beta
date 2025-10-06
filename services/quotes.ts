@@ -1,19 +1,23 @@
 import { Quote } from '../types';
 import { MIN_WORD_LENGTH } from '../constants';
 import { excludedWords } from './excludedWords';
-import { quotesData } from './quotesData';
 
 let quotes: Quote[] = [];
 
 export const fetchQuotes = async (): Promise<boolean> => {
     if (quotes.length > 0) return true;
     try {
-        // By importing the data directly, we avoid a network request
-        // and potential pathing issues on different deployment environments.
-        quotes = quotesData.results;
+        // Fetch the quotes from the JSON file. Using a relative path
+        // works correctly with the Vite build settings for GitHub Pages.
+        const response = await fetch('./quotes.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        quotes = data.results;
         return true;
     } catch (error) {
-        console.error("Could not load quotes data:", error);
+        console.error("Could not fetch or parse quotes.json:", error);
         return false;
     }
 };

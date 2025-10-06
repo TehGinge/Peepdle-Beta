@@ -22,6 +22,16 @@ export const fetchQuotes = async (): Promise<boolean> => {
     }
 };
 
+const isValidWord = (word: string, maxWordLength: number): boolean => {
+    const cleanedWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    if (!cleanedWord) return false;
+
+    const isNotExcluded = !excludedWords.includes(cleanedWord);
+    const hasValidLength = cleanedWord.length >= MIN_WORD_LENGTH && cleanedWord.length <= maxWordLength;
+    
+    return isNotExcluded && hasValidLength;
+};
+
 export const getSolutionById = (id: string, maxWordLength: number): { solution: string; quote: Quote, originalWord: string } | null => {
   if (quotes.length === 0) {
       console.error("Quotes not loaded yet. Call fetchQuotes first.");
@@ -36,16 +46,11 @@ export const getSolutionById = (id: string, maxWordLength: number): { solution: 
   
   console.log(`Found quote for ID "${id}":`, quote.quote);
 
-  // Find all valid words in that quote
-  const potentialWords = quote.quote.split(' ').filter(word => {
-    const cleanedWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-    if (!cleanedWord) return false;
+  // Exclude stage directions (text in square brackets) from word selection
+  const speakableQuote = quote.quote.replace(/\[.*?\]/g, '');
 
-    const isNotExcluded = !excludedWords.includes(cleanedWord);
-    const hasValidLength = cleanedWord.length >= MIN_WORD_LENGTH && cleanedWord.length <= maxWordLength;
-    
-    return isNotExcluded && hasValidLength;
-  });
+  // Find all valid words in that quote
+  const potentialWords = speakableQuote.split(' ').filter(word => isValidWord(word, maxWordLength));
 
   if (potentialWords.length === 0) {
     console.warn(`Quote with ID "${id}" was found, but it contains no valid words for the current settings (max length: ${maxWordLength}).`);
@@ -78,21 +83,15 @@ export const getNewSolution = (maxWordLength: number): { solution: string; quote
 
   // Pre-filter quotes to only include those with potential valid words
   const availableQuotes = quotes.filter(q => {
-    const words = q.quote.split(' ');
+    // Exclude stage directions from word selection
+    const speakableQuote = q.quote.replace(/\[.*?\]/g, '');
+    const words = speakableQuote.split(' ');
     // Rule 1: Quote must have more than 2 words
     if (words.length <= 2) {
       return false;
     }
     // Rule 2: Quote must contain at least one guessable word within the length constraints
-    return words.some(word => {
-      const cleanedWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-      if (!cleanedWord) return false;
-
-      const isNotExcluded = !excludedWords.includes(cleanedWord);
-      const hasValidLength = cleanedWord.length >= MIN_WORD_LENGTH && cleanedWord.length <= maxWordLength;
-      
-      return isNotExcluded && hasValidLength;
-    });
+    return words.some(word => isValidWord(word, maxWordLength));
   });
 
   // Fallback if no quotes meet the criteria for the given maxWordLength
@@ -116,16 +115,9 @@ export const getNewSolution = (maxWordLength: number): { solution: string; quote
     // Select a random quote from the filtered list
     const randomQuote = availableQuotes[Math.floor(Math.random() * availableQuotes.length)];
     
-    // Find all valid words in that quote
-    const potentialWords = randomQuote.quote.split(' ').filter(word => {
-      const cleanedWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-      if (!cleanedWord) return false;
-
-      const isNotExcluded = !excludedWords.includes(cleanedWord);
-      const hasValidLength = cleanedWord.length >= MIN_WORD_LENGTH && cleanedWord.length <= maxWordLength;
-      
-      return isNotExcluded && hasValidLength;
-    });
+    // Find all valid words in that quote, excluding stage directions
+    const speakableQuote = randomQuote.quote.replace(/\[.*?\]/g, '');
+    const potentialWords = speakableQuote.split(' ').filter(word => isValidWord(word, maxWordLength));
 
     // If we found valid words, pick one and return
     if (potentialWords.length > 0) {

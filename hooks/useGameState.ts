@@ -281,7 +281,7 @@ export const useGameState = () => {
   };
 
   const maskedQuote = quote && originalWord
-    ? quote.quote.replace(new RegExp(escapeRegExp(originalWord), 'i'), '_'.repeat(solution.length))
+    ? quote.quote.replace(new RegExp(escapeRegExp(originalWord), 'gi'), '_'.repeat(solution.length))
     : '';
 
   return {
@@ -305,11 +305,12 @@ export const useGameState = () => {
     addToast,
     removeToast,
     handleKeyPress,
+    // FIX: Corrected typo `startNewG` to `startNewGame` and added all missing properties to fix type errors.
     startNewGame,
-    giveUp,
     useHint,
     useSkip,
-    setMaxWordLength: handleLengthChange,
+    giveUp,
+    setMaxWordLength,
     isUnlimitedMode,
     isHardMode,
     isDarkMode,

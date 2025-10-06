@@ -67,16 +67,13 @@ export const useGameState = () => {
   };
   
   const startNewGame = useCallback((newMaxLength?: number) => {
-    // When starting a new game (e.g., via "Next Word"), ensure any puzzle ID is cleared from the URL.
-    if (window.location.search.includes('puzzle=')) {
-        console.log("Starting new game, clearing puzzle ID from URL.");
-        window.history.pushState({}, '', window.location.pathname);
-    } else {
-        console.log("Starting new random game.");
-    }
-
     const wordLength = newMaxLength || maxWordLength;
     const { solution: newSolution, quote: newQuote, originalWord: newOriginalWord } = getNewSolution(wordLength);
+
+    // Update the URL hash with the new puzzle ID to make it shareable.
+    // This is more compatible with sandboxed/iframe environments than history.replaceState.
+    window.location.hash = `puzzle=${newQuote.id}`;
+    
     setSolution(newSolution);
     setQuote(newQuote);
     setOriginalWord(newOriginalWord);
@@ -98,11 +95,13 @@ export const useGameState = () => {
         return;
       }
 
-      const urlParams = new URLSearchParams(window.location.search);
+      // Read puzzle ID from the URL hash for better compatibility.
+      const hash = window.location.hash.substring(1);
+      const urlParams = new URLSearchParams(hash);
       const puzzleId = urlParams.get('puzzle');
 
       if (puzzleId) {
-        console.log(`URL contains puzzle ID: "${puzzleId}". Attempting to load specific game.`);
+        console.log(`URL hash contains puzzle ID: "${puzzleId}". Attempting to load specific game.`);
         const specificSolution = getSolutionById(puzzleId, maxWordLength);
         
         if (specificSolution) {
@@ -121,12 +120,12 @@ export const useGameState = () => {
         } else {
           console.warn(`Failed to load puzzle for ID "${puzzleId}". It might be invalid or have no suitable words for your settings. Starting a random game instead.`);
           addToast('Invalid puzzle link. Starting a random game.');
-          // Clear the bad URL param and start a random game
-          window.history.pushState({}, '', window.location.pathname);
+          // Clear the bad URL hash and start a random game.
+          window.location.hash = '';
           startNewGame();
         }
       } else {
-        console.log("No puzzle ID in URL. Starting a random game.");
+        console.log("No puzzle ID in URL hash. Starting a random game.");
         startNewGame();
       }
       setIsLoading(false);
@@ -264,7 +263,7 @@ export const useGameState = () => {
         setCurrentGuess(prev => prev + key.toLowerCase());
       }
     }
-  }, [gameState, currentGuess, solution, guesses, winStreak, skips, gamesWon, isRevealing, personalBest, addToast, setSkips, setGamesWon, setWinStreak, setPersonalBest, isHardMode, isUnlimitedMode, hintTokens, setHintTokens, startNewGame]);
+  }, [gameState, currentGuess, solution, guesses, winStreak, skips, gamesWon, isRevealing, personalBest, addToast, setSkips, setGamesWon, setWinStreak, setPersonalBest, isHardMode, isUnlimitedMode, hintTokens, setHintTokens]);
 
   const letterStatuses = getLetterStatuses(guesses, solution);
   

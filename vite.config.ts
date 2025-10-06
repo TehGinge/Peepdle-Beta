@@ -1,12 +1,36 @@
-import { defineConfig } from 'vite';
+import path from 'path';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  // Set the base path to be relative.
-  // This ensures that asset paths in the built HTML are relative (e.g., "./assets/index.js")
-  // instead of absolute (e.g., "/assets/index.js"), which is necessary for deployments
-  // to a subdirectory, like on GitHub Pages.
-  base: './',
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, '.', '');
+    return {
+      server: {
+        port: 3000,
+        host: '0.0.0.0',
+      },
+      plugins: [react()],
+      define: {
+        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+      },
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, '.'),
+        }
+      },
+      build: {
+        assetsInclude: ['**/*.json'],
+        rollupOptions: {
+          output: {
+            assetFileNames: (assetInfo) => {
+              if (assetInfo.name === 'quotes.json') {
+                return 'quotes.json';
+              }
+              return 'assets/[name]-[hash][extname]';
+            },
+          },
+        },
+      },
+    };
 });

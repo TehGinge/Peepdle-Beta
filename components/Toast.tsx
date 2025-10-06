@@ -20,7 +20,10 @@ export const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
 
 export const ToastContainer: React.FC<{children: React.ReactNode}> = ({ children }) => {
   return (
-    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2">
+    <div 
+      className="fixed left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 transition-all duration-300"
+      style={{ top: 'var(--toast-top)' }}
+    >
       {children}
     </div>
   );

@@ -50,6 +50,8 @@ const App: React.FC = () => {
   const [isSkipAnimating, setIsSkipAnimating] = useState(false);
   const prevSkipsRef = useRef(skips);
 
+  const isAnyModalOpen = isSettingsModalOpen || isInfoModalOpen || gameState === 'WON' || gameState === 'LOST';
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -99,7 +101,10 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-[100dvh] items-center p-2 sm:p-4 font-sans">
+    <div 
+      className="flex flex-col h-screen max-h-[100dvh] items-center p-2 sm:p-4 font-sans"
+      style={{ '--toast-top': isAnyModalOpen ? '1rem' : '6rem' } as React.CSSProperties}
+    >
       <ToastContainer>
         {toasts.map((toast) => (
           <Toast key={toast.id} message={toast.message} onClose={() => removeToast(toast.id)} />
@@ -116,7 +121,7 @@ const App: React.FC = () => {
                   <div className="text-xs text-gray-500 dark:text-gray-400">STREAK</div>
               </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-wider absolute left-1/2 -translate-x-1/2">PEEPDLE</h1>
+          <h1 className="text-5xl sm:text-6xl font-logo tracking-tighter text-peep-green dark:text-green-400 absolute left-1/2 -translate-x-1/2">PEEPDLE</h1>
           <div className="flex items-center gap-4">
               <div className="text-right">
                   <div className="text-lg font-bold">{personalBest}</div>
@@ -128,9 +133,9 @@ const App: React.FC = () => {
           </div>
       </header>
 
-      {/* Central content area: Quote scrolls, Grid is fixed */}
-      <div className="w-full max-w-md mx-auto flex-grow flex flex-col min-h-0 px-2">
-        <div className="flex-grow overflow-y-auto flex items-center justify-center py-2">
+      {/* Central content area: Quote scrolls on mobile, grid is centered on desktop */}
+      <div className="w-full max-w-md mx-auto flex-grow flex flex-col md:justify-center min-h-0 px-2">
+        <div className="flex-grow md:flex-grow-0 overflow-y-auto flex items-center justify-center py-2">
             <p className="text-center italic text-slate-600 dark:text-slate-300 text-base sm:text-lg">
                 "{maskedQuote}"
             </p>

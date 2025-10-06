@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { GameStatus, Quote, LetterState } from '../types';
 import { getGuessStates } from '../utils/gameUtils';
@@ -111,7 +112,7 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, status, solu
   
   const handleShareLink = () => {
     if (!quote) return;
-    const url = `${window.location.origin}${window.location.pathname}#puzzle=${quote.id}`;
+    const url = `${window.location.origin}${window.location.pathname}#quote=${quote.id}`;
     navigator.clipboard.writeText(url).then(() => {
       addToast('Copied link to clipboard!');
     }).catch(err => {

@@ -23,13 +23,13 @@ export const CloseIcon: React.FC = () => (
 
 export const BackspaceIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 002.828 0L21 12M3 12l6.414-6.414a2 2 0 012.828 0L21 12" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2zM16 10l-4 4m0-4l4 4" />
     </svg>
 );
 
 export const EnterIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v-8" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 10l-5 5 5 5M20 4v7a4 4 0 01-4 4H4" />
     </svg>
 );
 

@@ -71,9 +71,9 @@ export const useGameState = () => {
     const wordLength = newMaxLength || maxWordLength;
     const { solution: newSolution, quote: newQuote, originalWord: newOriginalWord } = getNewSolution(wordLength);
 
-    // Update the URL hash with the new puzzle ID to make it shareable.
+    // Update the URL hash with the new quote ID to make it shareable.
     // This is more compatible with sandboxed/iframe environments than history.replaceState.
-    window.location.hash = `puzzle=${newQuote.id}`;
+    window.location.hash = `quote=${newQuote.id}`;
     
     setSolution(newSolution);
     setQuote(newQuote);
@@ -96,17 +96,17 @@ export const useGameState = () => {
         return;
       }
 
-      // Read puzzle ID from the URL hash for better compatibility.
+      // Read quote ID from the URL hash for better compatibility.
       const hash = window.location.hash.substring(1);
       const urlParams = new URLSearchParams(hash);
-      const puzzleId = urlParams.get('puzzle');
+      const quoteId = urlParams.get('quote');
 
-      if (puzzleId) {
-        console.log(`URL hash contains puzzle ID: "${puzzleId}". Attempting to load specific game.`);
-        const specificSolution = getSolutionById(puzzleId, maxWordLength);
+      if (quoteId) {
+        console.log(`URL hash contains quote ID: "${quoteId}". Attempting to load specific game.`);
+        const specificSolution = getSolutionById(quoteId, maxWordLength);
         
         if (specificSolution) {
-          console.log(`Successfully loaded puzzle for ID "${puzzleId}".`);
+          console.log(`Successfully loaded quote for ID "${quoteId}".`);
           const { solution: newSolution, quote: newQuote, originalWord: newOriginalWord } = specificSolution;
           setSolution(newSolution);
           setQuote(newQuote);
@@ -119,14 +119,14 @@ export const useGameState = () => {
             episode: { revealed: false, value: newQuote.episode }
           });
         } else {
-          console.warn(`Failed to load puzzle for ID "${puzzleId}". It might be invalid or have no suitable words for your settings. Starting a random game instead.`);
-          addToast('Invalid puzzle link. Starting a random game.');
+          console.warn(`Failed to load quote for ID "${quoteId}". It might be invalid or have no suitable words for your settings. Starting a random game instead.`);
+          addToast('Invalid quote link. Starting a random game.');
           // Clear the bad URL hash and start a random game.
           window.location.hash = '';
           startNewGame();
         }
       } else {
-        console.log("No puzzle ID in URL hash. Starting a random game.");
+        console.log("No quote ID in URL hash. Starting a random game.");
         startNewGame();
       }
       setIsLoading(false);
@@ -175,11 +175,9 @@ export const useGameState = () => {
     if (gameState !== 'PLAYING') return;
     
     if (isUnlimitedMode) {
-      addToast(`Word was: ${solution.toUpperCase()}.`);
       startNewGame();
     } else if (skips > 0) {
       setSkips(s => s - 1);
-      addToast(`Word was: ${solution.toUpperCase()}.`);
       startNewGame();
     } else {
         addToast("You're out of skips!");

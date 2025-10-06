@@ -19,18 +19,5 @@ export default defineConfig(({ mode }) => {
           '@': path.resolve(__dirname, '.'),
         }
       },
-      build: {
-        assetsInclude: ['**/*.json'],
-        rollupOptions: {
-          output: {
-            assetFileNames: (assetInfo) => {
-              if (assetInfo.name === 'quotes.json') {
-                return 'quotes.json';
-              }
-              return 'assets/[name]-[hash][extname]';
-            },
-          },
-        },
-      },
     };
 });
